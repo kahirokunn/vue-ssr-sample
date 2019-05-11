@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build-ssr": "vue-cli-service build src/entry-server.ts --target lib --name ssr --mode production",
     "ssr": "node server/index.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

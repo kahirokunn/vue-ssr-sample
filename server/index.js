@@ -1,3 +1,4 @@
+const createApp = require("../dist/ssr.umd.min").default;
 const Vue = require("vue");
 const server = require("express")();
 const { createRenderer } = require("vue-server-renderer");
@@ -17,42 +18,45 @@ const renderer = createRenderer({
     </html>`
 });
 
-server.get("*", (req, res) => {
-  const app = new Vue({
-    data: () => ({ count: 0 }),
-    computed: {
-      url: () => req.url
-    },
-    methods: {
-      inc() {
-        this.count++;
-      },
-      dec() {
-        this.count--;
-      }
-    },
-    template: `
-      <div>
-        <div>The visited URL is: {{ url }}</div>
-        <p><span>Count: {{ count }}</span></p>
-        <button @click="inc()">+</button>
-        <button @click="dec()">-</button>
-      </div>`
-  });
-  app.inc();
+/* eslint-disable no-console */
 
+server.get("*", (req, res) => {
   const context = {
     title: "hello ssr",
-    meta: '<meta charset="UTF-8">'
+    meta: '<meta name="keywords" content="Vue, SSR">',
+    url: req.url,
+    // window.__INITIAL_STATE__={"counter":3}
+    // と、jsonシリアライズした状態で埋め込まれる
+    // vuexの単一状態木とかのサーバーからフロントへのデータ引っ越しはこれを利用する
+    // 例: store.replaceState(window.__INITIAL_STATE__)
+    state: {
+      counter: 3
+    }
   };
 
-  renderer.renderToString(app, context, (err, html) => {
-    if (err) {
-      res.status(500).end("Internal Server Error");
-      return;
-    }
-    res.end(html);
-  });
+  createApp(context)
+    .then(app => {
+      renderer.renderToString(app, context, (err, html) => {
+        if (err) {
+          console.log(req.url, err);
+          if (err.code === 404) {
+            res.status(404).end("Page not found");
+          } else {
+            res.status(500).end("Internal Server Error");
+          }
+        } else {
+          res.end(html);
+        }
+      });
+    })
+    .catch(err => {
+      console.log(req.url, err);
+      if (err.code === 404) {
+        res.status(404).end("Page not found");
+      } else {
+        res.status(500).end("Internal Server Error");
+      }
+    });
 });
 
 const port = 8888;
