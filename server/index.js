@@ -1,6 +1,18 @@
 const Vue = require("vue");
 const server = require("express")();
-const renderer = require("vue-server-renderer").createRenderer();
+const { createRenderer } = require("vue-server-renderer");
+
+const renderer = createRenderer({
+  // vue-ssr-outletの部分にhtmlを挿入する
+  template: `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head><title>Hello</title></head>
+      <body>
+        <!--vue-ssr-outlet-->
+      </body>
+    </html>`
+});
 
 server.get("*", (req, res) => {
   const app = new Vue({
@@ -31,13 +43,7 @@ server.get("*", (req, res) => {
       res.status(500).end("Internal Server Error");
       return;
     }
-    res.end(`
-      <!DOCTYPE html>
-      <html lang="en">
-        <head><title>Hello</title></head>
-        <body>${html}</body>
-      </html>
-    `);
+    res.end(html);
   });
 });
 
