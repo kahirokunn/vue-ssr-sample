@@ -24,6 +24,7 @@ server.get("*", (req, res) => {
         <button @click="dec()">-</button>
       </div>`
   });
+  app.inc();
 
   renderer.renderToString(app, (err, html) => {
     if (err) {
