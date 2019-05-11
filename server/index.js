@@ -41,7 +41,12 @@ server.get("*", (req, res) => {
   });
   app.inc();
 
-  renderer.renderToString(app, (err, html) => {
+  const context = {
+    title: "hello ssr",
+    meta: '<meta charset="UTF-8">'
+  };
+
+  renderer.renderToString(app, context, (err, html) => {
     if (err) {
       res.status(500).end("Internal Server Error");
       return;
