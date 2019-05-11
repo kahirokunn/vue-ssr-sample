@@ -4,6 +4,7 @@ const server = require("express")();
 const { createRenderer } = require("vue-server-renderer");
 
 const renderer = createRenderer({
+  runInNewContext: false,
   // vue-ssr-outletの部分にhtmlを挿入する
   template: `
     <!DOCTYPE html>
