@@ -6,8 +6,11 @@ const renderer = createRenderer({
   // vue-ssr-outletの部分にhtmlを挿入する
   template: `
     <!DOCTYPE html>
-    <html lang="en">
-      <head><title>Hello</title></head>
+    <html>
+      <head>
+        <title>{{ title }}</title>
+        {{{ meta }}}
+      </head>
       <body>
         <!--vue-ssr-outlet-->
       </body>
